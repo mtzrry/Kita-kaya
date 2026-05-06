@@ -8,7 +8,7 @@ export function TopBar() {
           Welcome back
         </p>
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          Hello, <span className="text-gradient-cyan">Aria</span> 👋
+          Hello, <span className="text-gradient-cyan">Sobat Kita Kaya</span> 👋
         </h1>
       </div>
 
