@@ -28,7 +28,7 @@ export function AppSidebar() {
             <Sparkles className="h-5 w-5 text-background" />
           </div>
           <div>
-            <div className="font-bold text-lg tracking-tight">MicroPact</div>
+            <div className="font-bold text-lg tracking-tight">Kita Kaya</div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
               Finance · Impact
             </div>
