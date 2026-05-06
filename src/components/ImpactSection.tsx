@@ -267,7 +267,7 @@ function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => 
 function DetailRow({
   icon: Icon, label, value, mono, onCopy,
 }: {
-  icon: typeof Hash; label: string; value: string; mono?: boolean; onCopy?: () => void;
+  icon: React.ComponentType<{ className?: string }>; label: string; value: string; mono?: boolean; onCopy?: () => void;
 }) {
   return (
     <div className="flex items-center gap-3 p-2.5 rounded-lg border border-white/5 bg-white/5">
