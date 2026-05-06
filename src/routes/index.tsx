@@ -7,10 +7,9 @@ import { LearnSection } from "@/components/LearnSection";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MicroPact — Finance, Impact, Literacy" },
-      { name: "description", content: "MicroPact is a Web3-inspired dashboard combining personal finance, transparent donations, and financial literacy for global impact." },
-      { property: "og:title", content: "MicroPact Dashboard" },
-      { property: "og:description", content: "Track money, donate transparently, learn responsibly." },
+  { title: "Kita Kaya — Finance, Impact, Literacy" },
+  { name: "description", content: "Kita Kaya is a Web3-inspired dashboard..." },
+  { property: "og:title", content: "Kita Kaya Dashboard" },
     ],
   }),
   component: Index,
