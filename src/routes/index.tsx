@@ -1,26 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import { FinancialTracker } from "@/components/FinancialTracker";
+import { ImpactSection } from "@/components/ImpactSection";
+import { LearnSection } from "@/components/LearnSection";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MicroPact — Finance, Impact, Literacy" },
+      { name: "description", content: "MicroPact is a Web3-inspired dashboard combining personal finance, transparent donations, and financial literacy for global impact." },
+      { property: "og:title", content: "MicroPact Dashboard" },
+      { property: "og:description", content: "Track money, donate transparently, learn responsibly." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <FinancialTracker />
+        <ImpactSection />
+        <LearnSection />
+      </div>
+    </DashboardLayout>
+  );
 }
