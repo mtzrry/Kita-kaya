@@ -10,6 +10,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { TrendingUp, TrendingDown, Sparkles, AlertTriangle, CheckCircle2, Lightbulb } from "lucide-react";
+import { useCurrency } from "@/lib/currency";
 
 const data = [
   { m: "Jan", income: 3200, expenses: 2400 },
@@ -26,6 +27,7 @@ const BASE = { needs: 62, wants: 28, savings: 10 };
 
 export function FinancialTracker() {
   const [wantsCut, setWantsCut] = useState(15); // % reduction in Wants
+  const { format } = useCurrency();
 
   const insights = useMemo(() => {
     const last = data[data.length - 1];
@@ -50,11 +52,11 @@ export function FinancialTracker() {
     if (expDelta > 8) tips.push({ tone: "warn", text: `Spend up ${expDelta.toFixed(1)}% MoM — driven by Wants category.` });
     if (incDelta > 0) tips.push({ tone: "good", text: `Income trending +${incDelta.toFixed(1)}% — direct surplus to Savings.` });
     if (last.expenses / last.income > 0.75) tips.push({ tone: "warn", text: `Expense ratio at ${((last.expenses / last.income) * 100).toFixed(0)}% — above safe 75% threshold.` });
-    tips.push({ tone: "tip", text: `Avg monthly burn $${burn.toFixed(0)}/day. ${remainingDays} days left this cycle.` });
-    if (saved > 0) tips.push({ tone: "good", text: `Cutting Wants ${wantsCut}% saves $${saved.toFixed(0)} → month-end net $${monthEndNet.toFixed(0)}.` });
+    tips.push({ tone: "tip", text: `Avg monthly burn ${format(burn, { decimals: 0 })}/day. ${remainingDays} days left this cycle.` });
+    if (saved > 0) tips.push({ tone: "good", text: `Cutting Wants ${wantsCut}% saves ${format(saved, { decimals: 0 })} → month-end net ${format(monthEndNet, { decimals: 0 })}.` });
 
     return { avgIncome, avgExp, monthEndNet, baselineNet, saved, projectedExp, tips };
-  }, [wantsCut]);
+  }, [wantsCut, format]);
 
   const newWants = Math.max(0, BASE.wants * (1 - wantsCut / 100));
   const reclaimed = BASE.wants - newWants;
@@ -71,9 +73,9 @@ export function FinancialTracker() {
             <h2 className="text-xl font-bold mt-1">Income vs Expenses</h2>
           </div>
           <div className="flex gap-2">
-            <Stat label="Income" value={`+$${data[data.length - 1].income.toLocaleString()}`} trend="up" color="var(--brand-emerald)" />
-            <Stat label="Spend" value={`-$${insights.projectedExp.toFixed(0)}`} trend="down" color="var(--brand-cyan)" />
-            <Stat label="Net" value={`$${insights.monthEndNet.toFixed(0)}`} trend={insights.monthEndNet >= 0 ? "up" : "down"} color="var(--brand-violet)" />
+            <Stat label="Income" value={`+${format(data[data.length - 1].income, { decimals: 0 })}`} trend="up" color="var(--brand-emerald)" />
+            <Stat label="Spend" value={`-${format(insights.projectedExp, { decimals: 0 })}`} trend="down" color="var(--brand-cyan)" />
+            <Stat label="Net" value={format(insights.monthEndNet, { decimals: 0 })} trend={insights.monthEndNet >= 0 ? "up" : "down"} color="var(--brand-violet)" />
           </div>
         </div>
 
@@ -109,9 +111,9 @@ export function FinancialTracker() {
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
-          <KPI label="Avg Income" value={`$${insights.avgIncome.toFixed(0)}`} />
-          <KPI label="Avg Spend" value={`$${insights.avgExp.toFixed(0)}`} />
-          <KPI label="Sim. Saved" value={`+$${insights.saved.toFixed(0)}`} accent />
+          <KPI label="Avg Income" value={format(insights.avgIncome, { decimals: 0 })} />
+          <KPI label="Avg Spend" value={format(insights.avgExp, { decimals: 0 })} />
+          <KPI label="Sim. Saved" value={`+${format(insights.saved, { decimals: 0 })}`} accent />
         </div>
       </div>
 
@@ -167,8 +169,8 @@ export function FinancialTracker() {
         <div className="mt-4 rounded-xl p-3 border border-emerald-400/20 bg-emerald-400/5">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Projected Month-End</div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-gradient-emerald">${insights.monthEndNet.toFixed(0)}</span>
-            <span className="text-xs text-muted-foreground">vs ${insights.baselineNet.toFixed(0)} baseline</span>
+            <span className="text-2xl font-bold text-gradient-emerald">{format(insights.monthEndNet, { decimals: 0 })}</span>
+            <span className="text-xs text-muted-foreground">vs {format(insights.baselineNet, { decimals: 0 })} baseline</span>
           </div>
         </div>
       </div>
