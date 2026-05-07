@@ -29,10 +29,16 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MicroPact — Finance · Impact · Literacy" },
+      { title: "KitaKaya Finance" },
       { name: "description", content: "Web3-inspired dashboard for personal finance, transparent donations, and financial literacy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "KitaKaya Finance" },
+      { name: "twitter:title", content: "KitaKaya Finance" },
+      { property: "og:description", content: "Web3-inspired dashboard for personal finance, transparent donations, and financial literacy." },
+      { name: "twitter:description", content: "Web3-inspired dashboard for personal finance, transparent donations, and financial literacy." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/58e8f56e-a2b1-4251-a94d-f1d2a9eb71f9" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/58e8f56e-a2b1-4251-a94d-f1d2a9eb71f9" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
