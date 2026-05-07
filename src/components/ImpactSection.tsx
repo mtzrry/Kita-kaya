@@ -1,12 +1,55 @@
-import { useState } from "react";
-import { ShieldCheck, ExternalLink, HeartHandshake, Droplet, BookOpen, Utensils, Copy, Share2, Download, X, Hash, Layers, Wallet, CheckCircle2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  ShieldCheck, ExternalLink, HeartHandshake, BookOpen, Utensils,
+  Copy, Share2, Download, X, Hash, Layers, Wallet, CheckCircle2, Sparkles,
+} from "lucide-react";
+
+type Campaign = {
+  id: string;
+  name: string;
+  subtitle: string;
+  raised: number;
+  goal: number;
+  color: string;
+  icon: typeof BookOpen;
+  sdg: number;
+  sdgLabel: string;
+  share: number; // share of round-up allocation 0-1
+};
+
+const campaigns: Campaign[] = [
+  {
+    id: "earthquake",
+    name: "Bantuan Tanggap Darurat Gempa",
+    subtitle: "Earthquake Disaster Relief",
+    raised: 18420, goal: 25000, color: "var(--brand-cyan)",
+    icon: HeartHandshake, sdg: 11, sdgLabel: "Sustainable Cities",
+    share: 0.45,
+  },
+  {
+    id: "education",
+    name: "Beasiswa Pendidikan",
+    subtitle: "Student Education Fund",
+    raised: 9210, goal: 15000, color: "var(--brand-violet)",
+    icon: BookOpen, sdg: 4, sdgLabel: "Quality Education",
+    share: 0.30,
+  },
+  {
+    id: "poverty",
+    name: "Bantuan Sembako",
+    subtitle: "Poverty Alleviation",
+    raised: 12740, goal: 20000, color: "var(--brand-emerald)",
+    icon: Utensils, sdg: 1, sdgLabel: "No Poverty",
+    share: 0.25,
+  },
+];
 
 type LedgerEntry = {
   id: string;
   to: string;
   amount: number;
   time: string;
-  icon: typeof Droplet;
+  icon: typeof BookOpen;
   color: string;
   txHash: string;
   block: number;
@@ -19,41 +62,45 @@ type LedgerEntry = {
 };
 
 const ledger: LedgerEntry[] = [
-  { id: "0xA1c…b3F", to: "Clean Water Fund", amount: 12.5, time: "2m ago", icon: Droplet, color: "var(--brand-cyan)",
+  { id: "0xA1c…b3F", to: "Bantuan Tanggap Darurat Gempa", amount: 25.0, time: "2m ago", icon: HeartHandshake, color: "var(--brand-cyan)",
     txHash: "0xA1c4f8b2e9d7a6c5b4e3f2a1d0c9b8e7f6a5d4c3b2a1e0d9c8b7a6f5e4d3c2b3F",
-    block: 19284731, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xCleanWater…001",
-    gas: "0.0021 MATIC", confirmations: 142, sdg: 6 },
-  { id: "0xE7d…91B", to: "School Meals Project", amount: 5.0, time: "14m ago", icon: Utensils, color: "var(--brand-emerald)",
+    block: 19284731, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xQuakeRelief…001",
+    gas: "0.0021 MATIC", confirmations: 142, sdg: 11 },
+  { id: "0xE7d…91B", to: "Bantuan Sembako", amount: 5.0, time: "14m ago", icon: Utensils, color: "var(--brand-emerald)",
     txHash: "0xE7d3a1b9c8f7e6d5c4b3a2e1d0f9c8b7a6e5d4c3b2a1f0e9d8c7b6a5f4e3d291B",
-    block: 19284602, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xSchoolMeals…044",
-    gas: "0.0019 MATIC", confirmations: 271, sdg: 2 },
-  { id: "0x3Fa…22C", to: "Literacy Initiative", amount: 8.75, time: "1h ago", icon: BookOpen, color: "var(--brand-violet)",
+    block: 19284602, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xSembako…044",
+    gas: "0.0019 MATIC", confirmations: 271, sdg: 1 },
+  { id: "0x3Fa…22C", to: "Beasiswa Pendidikan", amount: 8.75, time: "1h ago", icon: BookOpen, color: "var(--brand-violet)",
     txHash: "0x3Fa9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f022C",
-    block: 19283194, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xLiteracy…077",
+    block: 19283194, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xBeasiswa…077",
     gas: "0.0023 MATIC", confirmations: 1622, sdg: 4 },
-  { id: "0xB0e…77A", to: "Refugee Shelter", amount: 25.0, time: "3h ago", icon: HeartHandshake, color: "var(--brand-emerald)",
-    txHash: "0xB0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f077A",
-    block: 19281008, network: "Polygon", fromWallet: "0x7E9a…2D4f", toWallet: "0xRefuge…118",
-    gas: "0.0027 MATIC", confirmations: 3808, sdg: 10 },
-];
-
-const causes = [
-  { name: "Clean Water", raised: 8420, goal: 10000, color: "var(--brand-cyan)", icon: Droplet, sdg: 6 },
-  { name: "Education", raised: 5210, goal: 8000, color: "var(--brand-violet)", icon: BookOpen, sdg: 4 },
-  { name: "Food Security", raised: 11240, goal: 15000, color: "var(--brand-emerald)", icon: Utensils, sdg: 2 },
 ];
 
 export function ImpactSection() {
   const [roundup, setRoundup] = useState(2);
   const [selected, setSelected] = useState<LedgerEntry | null>(null);
+  const [success, setSuccess] = useState<Campaign | null>(null);
+
+  const breakdown = useMemo(() => {
+    const monthly = roundup * 4.345;
+    const yearly = roundup * 52;
+    const items = campaigns.map((c) => ({
+      campaign: c,
+      weekly: roundup * c.share,
+      monthly: monthly * c.share,
+      yearly: yearly * c.share,
+      pct: Math.round(c.share * 100),
+    }));
+    return { monthly, yearly, items };
+  }, [roundup]);
 
   return (
     <section className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-      <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {causes.map((c) => {
+      <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
+        {campaigns.map((c) => {
           const pct = Math.round((c.raised / c.goal) * 100);
           return (
-            <div key={c.name} className="glass rounded-2xl p-5 hover-lift flex flex-col">
+            <div key={c.id} className="glass rounded-2xl p-5 hover-lift flex flex-col h-full">
               <div className="flex items-center justify-between mb-3">
                 <div className="h-10 w-10 rounded-xl flex items-center justify-center"
                      style={{ background: c.color, opacity: 0.9 }}>
@@ -63,42 +110,103 @@ export function ImpactSection() {
                   <ShieldCheck className="h-3 w-3" style={{ color: c.color }} /> Verified
                 </span>
               </div>
-              <h3 className="font-bold text-lg">{c.name}</h3>
-              <p className="text-xs text-muted-foreground mb-3">SDG {c.sdg} aligned</p>
-              <div className="text-xs flex justify-between mb-1">
+              <h3 className="font-bold text-base leading-tight">{c.name}</h3>
+              <p className="text-xs text-muted-foreground mb-3">{c.subtitle} · SDG {c.sdg}</p>
+              <div className="text-xs flex justify-between mb-1 mt-auto">
                 <span className="text-muted-foreground">${c.raised.toLocaleString()}</span>
                 <span className="font-semibold">{pct}%</span>
               </div>
               <div className="h-1.5 rounded-full bg-white/5 overflow-hidden mb-4">
                 <div className="h-full rounded-full" style={{ width: `${pct}%`, background: c.color }} />
               </div>
-              <button className="mt-auto text-sm font-semibold py-2 rounded-xl border border-white/10 hover:bg-white/10 transition">
+              <button
+                onClick={() => setSuccess(c)}
+                className="text-sm font-semibold py-2 rounded-xl text-background hover-lift"
+                style={{ background: c.color }}
+              >
                 Donate
               </button>
             </div>
           );
         })}
 
+        {/* Round-up + live impact preview */}
         <div className="glass-strong rounded-2xl p-5 md:col-span-3 hover-lift">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:w-2/5">
               <div className="text-xs uppercase tracking-widest text-muted-foreground">Round-Up to Donate</div>
               <h3 className="font-bold text-lg mt-1">
-                Round spare change → <span className="text-gradient-emerald">${roundup.toFixed(2)}/wk</span>
+                Spare change → <span className="text-gradient-emerald">${roundup.toFixed(2)}/wk</span>
               </h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                Round each transaction to the nearest dollar. Difference goes to your selected cause.
+              <p className="text-xs text-muted-foreground mt-1 mb-4">
+                Round each transaction up. The difference is split across verified SDG causes.
               </p>
-            </div>
-            <div className="flex-1 max-w-md">
               <input
                 type="range" min={0} max={10} step={0.5} value={roundup}
                 onChange={(e) => setRoundup(Number(e.target.value))}
-                className="w-full accent-emerald-400"
+                className="w-full"
                 style={{ accentColor: "oklch(0.76 0.17 160)" }}
               />
               <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
                 <span>$0</span><span>$5</span><span>$10</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                <div className="rounded-xl border border-white/10 p-3">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Monthly</div>
+                  <div className="text-lg font-bold tabular-nums text-gradient-emerald">
+                    ${breakdown.monthly.toFixed(2)}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 p-3">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Yearly</div>
+                  <div className="text-lg font-bold tabular-nums text-gradient-cyan">
+                    ${breakdown.yearly.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3" style={{ color: "var(--brand-emerald)" }} />
+                  Live SDG Breakdown
+                </div>
+                <span className="text-[10px] text-muted-foreground">Per week</span>
+              </div>
+
+              {/* Stacked bar */}
+              <div className="h-2.5 w-full rounded-full overflow-hidden flex bg-white/5 mb-4">
+                {breakdown.items.map((it) => (
+                  <div key={it.campaign.id} className="h-full transition-all duration-300"
+                       style={{ width: `${it.pct}%`, background: it.campaign.color }} />
+                ))}
+              </div>
+
+              <div className="space-y-2.5">
+                {breakdown.items.map((it) => (
+                  <div key={it.campaign.id}
+                       className="flex items-center gap-3 p-2.5 rounded-xl border border-white/5 bg-white/5">
+                    <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+                         style={{ background: `color-mix(in oklab, ${it.campaign.color} 25%, transparent)` }}>
+                      <it.campaign.icon className="h-4 w-4" style={{ color: it.campaign.color }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold truncate">{it.campaign.subtitle}</div>
+                      <div className="text-[10px] text-muted-foreground">
+                        SDG {it.campaign.sdg} · {it.campaign.sdgLabel} · {it.pct}%
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold tabular-nums" style={{ color: it.campaign.color }}>
+                        ${it.weekly.toFixed(2)}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">
+                        ${it.monthly.toFixed(2)}/mo
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -143,7 +251,109 @@ export function ImpactSection() {
       </div>
 
       {selected && <DonationModal entry={selected} onClose={() => setSelected(null)} />}
+      {success && <SuccessModal campaign={success} onClose={() => setSuccess(null)} />}
     </section>
+  );
+}
+
+function SuccessModal({ campaign, onClose }: { campaign: Campaign; onClose: () => void }) {
+  const amount = 10;
+  const txHash = "0x" + Math.random().toString(16).slice(2, 10) + "…" + Math.random().toString(16).slice(2, 6);
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="glass-strong rounded-3xl p-8 w-full max-w-md text-center relative animate-in zoom-in-95 duration-300"
+        onClick={(e) => e.stopPropagation()}
+        style={{ boxShadow: "var(--shadow-glow-emerald)" }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 h-8 w-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <div className="mx-auto mb-5" style={{ animation: "success-pop 0.6s ease-out" }}>
+          <svg viewBox="0 0 96 96" className="h-24 w-24 mx-auto">
+            <defs>
+              <radialGradient id="sg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="oklch(0.76 0.17 160)" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="oklch(0.76 0.17 160)" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="48" cy="48" r="46" fill="url(#sg)" />
+            <circle
+              cx="48" cy="48" r="36"
+              fill="none"
+              stroke="oklch(0.76 0.17 160)"
+              strokeWidth="3"
+              strokeDasharray="226"
+              strokeDashoffset="226"
+              style={{ animation: "circle-draw 0.6s ease-out forwards" }}
+            />
+            <path
+              d="M30 50 L44 64 L66 38"
+              fill="none"
+              stroke="oklch(0.76 0.17 160)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="60"
+              strokeDashoffset="60"
+              style={{ animation: "check-draw 0.4s ease-out 0.5s forwards" }}
+            />
+          </svg>
+        </div>
+
+        <div className="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-1">
+          Donation Successful
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Thank You 💚</h2>
+        <p className="text-sm text-muted-foreground mb-5">
+          Your <span className="font-semibold text-foreground">${amount.toFixed(2)}</span> donation to{" "}
+          <span className="font-semibold text-foreground">{campaign.name}</span> is verified on the transparent ledger.
+        </p>
+
+        <div className="rounded-2xl border border-white/10 p-4 mb-5 text-left space-y-2"
+             style={{ background: `color-mix(in oklab, ${campaign.color} 8%, transparent)` }}>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Impact</span>
+            <span className="font-semibold">SDG {campaign.sdg} · {campaign.sdgLabel}</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Network</span>
+            <span className="font-semibold">Polygon</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Tx Hash</span>
+            <span className="font-mono">{txHash}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-emerald-400 pt-1 border-t border-white/5">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Verified on the transparent ledger
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={onClose}
+            className="text-sm font-semibold py-2.5 rounded-xl border border-white/10 hover:bg-white/10 transition"
+          >
+            Close
+          </button>
+          <button
+            onClick={onClose}
+            className="text-sm font-semibold py-2.5 rounded-xl text-background hover-lift flex items-center justify-center gap-2"
+            style={{ background: "var(--gradient-emerald)" }}
+          >
+            <Share2 className="h-4 w-4" /> Share Impact
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -159,10 +369,10 @@ function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => 
 
   const share = async () => {
     const url = `https://polygonscan.com/tx/${entry.txHash}`;
-    const text = `I just donated $${entry.amount.toFixed(2)} to ${entry.to} on-chain via MicroPact 💚`;
+    const text = `I just donated $${entry.amount.toFixed(2)} to ${entry.to} on-chain via Kita Kaya 💚`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "MicroPact Donation", text, url });
+        await navigator.share({ title: "Kita Kaya Donation", text, url });
       } else {
         await navigator.clipboard.writeText(`${text} ${url}`);
       }
@@ -176,7 +386,7 @@ function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `micropact-donation-${entry.txHash.slice(0, 10)}.json`;
+    a.download = `kitakaya-donation-${entry.txHash.slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -285,7 +495,6 @@ function DetailRow({
   );
 }
 
-// tiny inline sparkle icon for fee row (avoid extra import collision)
 function Sparkle(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
