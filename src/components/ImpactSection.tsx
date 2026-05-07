@@ -81,7 +81,7 @@ export function ImpactSection() {
   const [roundup, setRoundup] = useState(2);
   const [selected, setSelected] = useState<LedgerEntry | null>(null);
   const [success, setSuccess] = useState<Campaign | null>(null);
-  const { format, currency } = useCurrency();
+  const { format } = useCurrency();
 
   const breakdown = useMemo(() => {
     const monthly = roundup * 4.345;
