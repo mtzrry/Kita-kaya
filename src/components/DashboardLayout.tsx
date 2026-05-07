@@ -43,7 +43,7 @@ function Footer() {
           ))}
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">© 2026 MicroPact. Built for transparent impact.</p>
+      <p className="text-xs text-muted-foreground">© 2026 Kita Kaya</p>
     </footer>
   );
 }

@@ -3,6 +3,7 @@ import {
   ShieldCheck, ExternalLink, HeartHandshake, BookOpen, Utensils,
   Copy, Share2, Download, X, Hash, Layers, Wallet, CheckCircle2, Sparkles,
 } from "lucide-react";
+import { useCurrency } from "@/lib/currency";
 
 type Campaign = {
   id: string;
@@ -80,6 +81,7 @@ export function ImpactSection() {
   const [roundup, setRoundup] = useState(2);
   const [selected, setSelected] = useState<LedgerEntry | null>(null);
   const [success, setSuccess] = useState<Campaign | null>(null);
+  const { format } = useCurrency();
 
   const breakdown = useMemo(() => {
     const monthly = roundup * 4.345;
@@ -113,7 +115,7 @@ export function ImpactSection() {
               <h3 className="font-bold text-base leading-tight">{c.name}</h3>
               <p className="text-xs text-muted-foreground mb-3">{c.subtitle} · SDG {c.sdg}</p>
               <div className="text-xs flex justify-between mb-1 mt-auto">
-                <span className="text-muted-foreground">${c.raised.toLocaleString()}</span>
+                <span className="text-muted-foreground">{format(c.raised, { decimals: 0 })}</span>
                 <span className="font-semibold">{pct}%</span>
               </div>
               <div className="h-1.5 rounded-full bg-white/5 overflow-hidden mb-4">
@@ -136,7 +138,7 @@ export function ImpactSection() {
             <div className="lg:w-2/5">
               <div className="text-xs uppercase tracking-widest text-muted-foreground">Round-Up to Donate</div>
               <h3 className="font-bold text-lg mt-1">
-                Spare change → <span className="text-gradient-emerald">${roundup.toFixed(2)}/wk</span>
+                Spare change → <span className="text-gradient-emerald">{format(roundup)}/wk</span>
               </h3>
               <p className="text-xs text-muted-foreground mt-1 mb-4">
                 Round each transaction up. The difference is split across verified SDG causes.
@@ -148,19 +150,21 @@ export function ImpactSection() {
                 style={{ accentColor: "oklch(0.76 0.17 160)" }}
               />
               <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-                <span>$0</span><span>$5</span><span>$10</span>
+                <span>{format(0, { decimals: 0 })}</span>
+                <span>{format(5, { decimals: 0 })}</span>
+                <span>{format(10, { decimals: 0 })}</span>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
                 <div className="rounded-xl border border-white/10 p-3">
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Monthly</div>
                   <div className="text-lg font-bold tabular-nums text-gradient-emerald">
-                    ${breakdown.monthly.toFixed(2)}
+                    {format(breakdown.monthly)}
                   </div>
                 </div>
                 <div className="rounded-xl border border-white/10 p-3">
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Yearly</div>
                   <div className="text-lg font-bold tabular-nums text-gradient-cyan">
-                    ${breakdown.yearly.toFixed(2)}
+                    {format(breakdown.yearly)}
                   </div>
                 </div>
               </div>
@@ -199,10 +203,10 @@ export function ImpactSection() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold tabular-nums" style={{ color: it.campaign.color }}>
-                        ${it.weekly.toFixed(2)}
+                        {format(it.weekly)}
                       </div>
                       <div className="text-[10px] text-muted-foreground">
-                        ${it.monthly.toFixed(2)}/mo
+                        {format(it.monthly)}/mo
                       </div>
                     </div>
                   </div>
@@ -241,7 +245,7 @@ export function ImpactSection() {
               </div>
               <div className="text-right">
                 <div className="text-sm font-bold tabular-nums" style={{ color: l.color }}>
-                  ${l.amount.toFixed(2)}
+                  {format(l.amount)}
                 </div>
                 <div className="text-[10px] text-muted-foreground">{l.time}</div>
               </div>
@@ -258,6 +262,7 @@ export function ImpactSection() {
 
 function SuccessModal({ campaign, onClose }: { campaign: Campaign; onClose: () => void }) {
   const amount = 10;
+  const { format } = useCurrency();
   const txHash = "0x" + Math.random().toString(16).slice(2, 10) + "…" + Math.random().toString(16).slice(2, 6);
   return (
     <div
@@ -313,7 +318,7 @@ function SuccessModal({ campaign, onClose }: { campaign: Campaign; onClose: () =
         </div>
         <h2 className="text-2xl font-bold mb-2">Thank You 💚</h2>
         <p className="text-sm text-muted-foreground mb-5">
-          Your <span className="font-semibold text-foreground">${amount.toFixed(2)}</span> donation to{" "}
+          Your <span className="font-semibold text-foreground">{format(amount)}</span> donation to{" "}
           <span className="font-semibold text-foreground">{campaign.name}</span> is verified on the transparent ledger.
         </p>
 
@@ -360,6 +365,7 @@ function SuccessModal({ campaign, onClose }: { campaign: Campaign; onClose: () =
 function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const { format } = useCurrency();
 
   const copy = (text: string) => {
     navigator.clipboard?.writeText(text);
@@ -369,7 +375,7 @@ function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => 
 
   const share = async () => {
     const url = `https://polygonscan.com/tx/${entry.txHash}`;
-    const text = `I just donated $${entry.amount.toFixed(2)} to ${entry.to} on-chain via Kita Kaya 💚`;
+    const text = `I just donated ${format(entry.amount)} to ${entry.to} on-chain via Kita Kaya 💚`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "Kita Kaya Donation", text, url });
@@ -422,7 +428,7 @@ function DonationModal({ entry, onClose }: { entry: LedgerEntry; onClose: () => 
              style={{ background: `color-mix(in oklab, ${entry.color} 8%, transparent)` }}>
           <div className="text-xs text-muted-foreground">Amount</div>
           <div className="text-3xl font-bold tabular-nums" style={{ color: entry.color }}>
-            ${entry.amount.toFixed(2)}
+            {format(entry.amount)}
           </div>
           <div className="flex items-center gap-1.5 mt-1 text-xs text-emerald-400">
             <CheckCircle2 className="h-3 w-3" />
