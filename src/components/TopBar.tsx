@@ -1,6 +1,7 @@
 import { Wallet, Bell, Search, Check, Copy, LogOut, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useCurrency, type CurrencyCode } from "@/lib/currency";
 
 type WalletId = "metamask" | "walletconnect" | "coinbase" | "phantom";
 
@@ -28,6 +29,7 @@ export function TopBar() {
   const [open, setOpen] = useState(false);
   const [connecting, setConnecting] = useState<WalletId | null>(null);
   const [wallet, setWallet] = useState<{ id: WalletId; address: string } | null>(null);
+  const { currency, setCurrency, format } = useCurrency();
 
   useEffect(() => {
     try {
@@ -86,7 +88,24 @@ export function TopBar() {
 
         <div className="glass px-4 py-2 rounded-xl">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Balance</div>
-          <div className="font-bold text-lg tabular-nums">$4,287.50</div>
+          <div className="font-bold text-lg tabular-nums">{format(4287.5)}</div>
+        </div>
+
+        <div className="hidden sm:flex glass rounded-xl p-0.5 text-xs font-semibold" role="group" aria-label="Currency">
+          {(["USD", "IDR"] as CurrencyCode[]).map((c) => (
+            <button
+              key={c}
+              onClick={() => setCurrency(c)}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                currency === c
+                  ? "text-background"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              style={currency === c ? { background: "var(--gradient-cyan)" } : undefined}
+            >
+              {c}
+            </button>
+          ))}
         </div>
 
         <button className="glass h-10 w-10 rounded-xl flex items-center justify-center hover-lift relative">
