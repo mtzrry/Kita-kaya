@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { CurrencyProvider } from "@/lib/currency";
+import { TransactionsProvider } from "@/lib/transactions";
 
 import appCss from "../styles.css?url";
 
@@ -70,7 +71,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <CurrencyProvider>
-      <Outlet />
+      <TransactionsProvider>
+        <Outlet />
+      </TransactionsProvider>
     </CurrencyProvider>
   );
 }

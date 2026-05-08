@@ -2,6 +2,7 @@ import { Wallet, Bell, Search, Check, Copy, LogOut, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCurrency, type CurrencyCode } from "@/lib/currency";
+import { useTransactions } from "@/lib/transactions";
 
 type WalletId = "metamask" | "walletconnect" | "coinbase" | "phantom";
 
@@ -30,6 +31,7 @@ export function TopBar() {
   const [connecting, setConnecting] = useState<WalletId | null>(null);
   const [wallet, setWallet] = useState<{ id: WalletId; address: string } | null>(null);
   const { currency, setCurrency, format } = useCurrency();
+  const { totals } = useTransactions();
 
   useEffect(() => {
     try {
@@ -88,7 +90,7 @@ export function TopBar() {
 
         <div className="glass px-4 py-2 rounded-xl">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Balance</div>
-          <div className="font-bold text-lg tabular-nums">{format(4287.5)}</div>
+          <div className="font-bold text-lg tabular-nums">{format(4287.5 + totals.net)}</div>
         </div>
 
         <div className="hidden sm:flex glass rounded-xl p-0.5 text-xs font-semibold" role="group" aria-label="Currency">
