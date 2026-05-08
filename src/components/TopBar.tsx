@@ -2,6 +2,7 @@ import { Wallet, Bell, Search, Check, Copy, LogOut, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCurrency, type CurrencyCode } from "@/lib/currency";
+import { useTransactions } from "@/lib/transactions";
 
 type WalletId = "metamask" | "walletconnect" | "coinbase" | "phantom";
 
