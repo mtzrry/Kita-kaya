@@ -31,6 +31,7 @@ export function TopBar() {
   const [connecting, setConnecting] = useState<WalletId | null>(null);
   const [wallet, setWallet] = useState<{ id: WalletId; address: string } | null>(null);
   const { currency, setCurrency, format } = useCurrency();
+  const { totals } = useTransactions();
 
   useEffect(() => {
     try {
